@@ -1,51 +1,105 @@
+import { handleDelete } from './delete_note.js';
+import { handleToggle } from './drop_down_up.js';
+import { iconToggleUP } from './icons.js';
+import { changeColor } from './changecolor.js';
 
-const container = document.querySelector('#container');
-const newCardButton = document.querySelector('#new_card');
-newCardButton.addEventListener('click', createDraggableCard);
+// Constants
+export const container = document.getElementById('container');
 
-export function createDraggableCard() {
-    const card = document.createElement('div');
-    card.classList.add('card');
+// Variables for dragging functionality
+let newPosX = 0, newPosY = 0, startPosX = 0, startPosY = 0;
+let selectedElement;
 
-    const cardTitleBar = document.createElement('div');
-    cardTitleBar.classList.add('card-title-bar');
+// Function to add a new item to the container
+export async function addItem(elem) {
+    const uuid = uuidv4();
+    const element = `<div class="card" data-id="${uuid}">
+        <div class="card-title-bar" data-id="${uuid}">
+            <div id="toggle-${uuid}">${iconToggleUP}</div>
+            <div style="display: flex; gap: 5px">
+                <div><input id="input-${uuid}" type="color" value="#A6DCE9"></div>
+                <div id="remove-${uuid}"><i class="fa-solid fa-trash"></i></div>
+            </div>
+        </div>
+        <div class="card-body">
+            <textarea data-id="${uuid}"></textarea>
+        </div>
+    </div>`;
 
-    const titleDiv = document.createElement('div');
-    titleDiv.textContent = 'Note Title';
+    elem.insertAdjacentHTML('beforeend', element);
 
-    const trashDiv = document.createElement('div');
-    const trashIcon = document.createElement('i');
-    trashIcon.classList.add('fa-solid', 'fa-trash');
-    trashDiv.appendChild(trashIcon);
+    // Event listeners
+    const cardTitleBar = document.querySelector(`.card-title-bar[data-id="${uuid}"]`);
+    cardTitleBar.addEventListener("mousedown", mouseDown);
 
-    cardTitleBar.appendChild(titleDiv);
-    cardTitleBar.appendChild(trashDiv);
-    card.appendChild(cardTitleBar);
-    container.appendChild(card);
+    const toggleBtn = document.getElementById(`toggle-${uuid}`);
+    toggleBtn.addEventListener('click', handleToggle);
 
-    let isDragging = false;
-    let offsetX, offsetY;
+    const inputColor = document.getElementById(`input-${uuid}`);
+    inputColor.addEventListener('input', changeColor);
 
-    card.addEventListener('mousedown', startDragging);
-    function startDragging(event) {
-        isDragging = true;
-        offsetX = event.clientX - card.getBoundingClientRect().left;
-        offsetY = event.clientY - card.getBoundingClientRect().top;
-    
-        document.addEventListener('mousemove', drag);
-        document.addEventListener('mouseup', stopDragging);
+    const removeBtn = document.getElementById(`remove-${uuid}`);
+    removeBtn.addEventListener('click', handleDelete);
+
+    const textArea = document.querySelector(`.card-body textarea[data-id="${uuid}"]`);
+    textArea.addEventListener('input', autoGrow);
+    autoGrow.call(textArea);
+}
+
+// Function to automatically adjust textarea height
+function autoGrow() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+}
+
+// Function to handle mouse move during dragging
+function mouseMove(e) {
+    newPosX = startPosX - e.clientX;
+    newPosY = startPosY - e.clientY;
+  
+    startPosX = e.clientX;
+    startPosY = e.clientY;
+
+    const draggableRect = selectedElement.getBoundingClientRect();
+    const maxX = window.innerWidth - draggableRect.width;
+    const maxY = window.innerHeight - draggableRect.height;
+
+    let newX = selectedElement.offsetLeft - newPosX;
+    let newY = selectedElement.offsetTop - newPosY;
+    newX = Math.max(0, Math.min(newX, maxX));
+    newY = Math.max(0, Math.min(newY, maxY));
+
+    selectedElement.style.top = newY + "px";
+    selectedElement.style.left = newX + "px";
+}
+
+// Function to handle mouse down event for dragging
+function mouseDown(e) {
+    e.preventDefault();
+
+    if (e.target.tagName === 'NAV') {
+        console.log("Shame");
+        return;
     }
 
-    function drag(event) {
-        event.preventDefault();
-        const x = event.clientX - offsetX;
-        const y = event.clientY - offsetY;
-        card.style.left = `${x}px`;
-        card.style.top = `${y}px`;
-    }
-    function stopDragging() {
-        isDragging = false;
-        document.removeEventListener('mousemove', drag);
-        document.removeEventListener('mouseup', stopDragging);
-    }
+    const items = document.querySelectorAll('.card-title-bar');
+    selectedElement = e.target.parentElement;
+
+    startPosX = e.clientX;
+    startPosY = e.clientY;
+
+    items.forEach(item => item.parentElement.style.zIndex = 0);
+    selectedElement.style.zIndex = 999;
+
+    selectedElement.classList.add('dragging');
+    selectedElement.classList.remove('dropped');
+
+    document.addEventListener('mousemove', mouseMove);
+
+    document.addEventListener('mouseup', () => {
+        const id = selectedElement.dataset.id;
+        selectedElement.classList.remove('dragging');
+        selectedElement.classList.add('dropped');
+        document.removeEventListener('mousemove', mouseMove);
+    });
 }
