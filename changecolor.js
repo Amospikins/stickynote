@@ -19,3 +19,23 @@ export function changeColor(e) {
     }
 
 }
+
+
+export function changeTextColor(event) {
+    // Extract the color value from the event target
+    const selectedColor = event.target.value;
+
+    // Find the closest ancestor element with the class "card"
+    const card = event.target.closest('.card');
+
+    // If a card element is found
+    if (card) {
+        // Find the first child element of the card's second child (assuming card has at least two children)
+        const noteBody = card.children[1]?.children[0];
+
+        // If the noteBody exists, set its text color to the selected color
+        if (noteBody) {
+            noteBody.style.color = selectedColor;
+        }
+    }
+}

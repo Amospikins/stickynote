@@ -1,3 +1,3 @@
 export async function handleDelete(){
-    this.parentElement.parentElement.remove()
+    this.closest('.card').remove()
 }

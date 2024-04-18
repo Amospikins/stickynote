@@ -45,7 +45,6 @@ export async function stackCardsToLeft() {
     }
 }
 
-
 // Function to stack all cards to the right side of the window
 export async function stackCardsToRight() {
     const windowHeight = window.innerHeight;
@@ -53,7 +52,7 @@ export async function stackCardsToRight() {
     const cards = document.querySelectorAll('.card');
     let totalHeight = 0;
     let topPosition = 10; // Initial top position
-    let leftPosition = windowWidth - 10; // Initial left position (right side)
+    let rightPosition = windowWidth - 10; // Initial right position
 
     // Calculate the total height of all cards
     cards.forEach(card => {
@@ -67,11 +66,11 @@ export async function stackCardsToRight() {
         cards.forEach(card => {
             // If current row height exceeds window height, start new row
             if (currentRowHeight + card.offsetHeight + 10 > windowHeight) {
-                leftPosition -= card.offsetWidth + 10; // Move to previous column (right side)
+                rightPosition -= card.offsetWidth + 10; // Move to previous column (right side)
                 topPosition = 10; // Reset top position for new row
                 currentRowHeight = 0; // Reset current row height
             }
-            card.style.left = leftPosition - card.offsetWidth + 'px'; // Set left position (align right edge of card)
+            card.style.left = (rightPosition - card.offsetWidth) + 'px'; // Set left position (align right edge of card)
             card.style.top = topPosition + 'px'; // Set top position
             topPosition += card.offsetHeight + 10; // Increment top position by card height + spacing
             currentRowHeight += card.offsetHeight + 10; // Update current row height
@@ -79,7 +78,7 @@ export async function stackCardsToRight() {
     } else {
         // Stack cards vertically
         cards.forEach(card => {
-            card.style.left = '0'; // Align cards to the left
+            card.style.left = (windowWidth - card.offsetWidth - 10) + 'px'; // Align cards to the right
             card.style.top = topPosition + 'px'; // Set top position
             topPosition += card.offsetHeight + 10; // Increment top position by card height + spacing
         });

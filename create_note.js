@@ -1,7 +1,7 @@
 import { handleDelete } from './delete_note.js';
 import { handleToggle } from './drop_down_up.js';
 import { iconToggleUP } from './icons.js';
-import { changeColor } from './changecolor.js';
+import { changeColor, changeTextColor } from './changecolor.js';
 
 // Constants
 export const container = document.getElementById('container');
@@ -16,18 +16,31 @@ export async function addItem(elem) {
     const element = `<div class="card" data-id="${uuid}">
         <div class="card-title-bar" data-id="${uuid}">
             <div id="toggle-${uuid}">${iconToggleUP}</div>
-            <div style="display: flex; gap: 5px">
-                <div><input id="input-${uuid}" type="color" value="#A6DCE9"></div>
+            <div style="display: flex; gap: 15px">
+                <div id="settings-${uuid}"><i class="fa-solid fa-ellipsis"></i></div>
                 <div id="remove-${uuid}"><i class="fa-solid fa-trash"></i></div>
             </div>
         </div>
         <div class="card-body">
-            <textarea data-id="${uuid}"></textarea>
+            <textarea class="ss" data-id="${uuid}"></textarea>
+        </div>
+        <div class="card-footer">
+            <h4><i class="fa-solid fa-gear"></i>  Settings</h4>
+            <div class="line"></div>
+            <div class="card-footer-items">
+                <div>
+                    <label for="bgcolor">BG Color:</label>
+                    <input id="input-${uuid}" type="color" value="#A6DCE9">
+                </div>
+                <div>
+                    <label for="textcolor">Text Color:</label>
+                    <input id="input-text-${uuid}" type="color" value="#3c3c3c">
+                </div>
+            </div>
         </div>
     </div>`;
 
     elem.insertAdjacentHTML('beforeend', element);
-
     // Event listeners
     const cardTitleBar = document.querySelector(`.card-title-bar[data-id="${uuid}"]`);
     cardTitleBar.addEventListener("mousedown", mouseDown);
@@ -35,8 +48,15 @@ export async function addItem(elem) {
     const toggleBtn = document.getElementById(`toggle-${uuid}`);
     toggleBtn.addEventListener('click', handleToggle);
 
+    const settingsBtn = document.getElementById(`settings-${uuid}`);
+    settingsBtn.addEventListener('click', openSettings);
+   
+
     const inputColor = document.getElementById(`input-${uuid}`);
     inputColor.addEventListener('input', changeColor);
+    
+    const inputTextColor = document.getElementById(`input-text-${uuid}`);
+    inputTextColor.addEventListener('input', changeTextColor);
 
     const removeBtn = document.getElementById(`remove-${uuid}`);
     removeBtn.addEventListener('click', handleDelete);
@@ -103,3 +123,21 @@ function mouseDown(e) {
         document.removeEventListener('mousemove', mouseMove);
     });
 }
+
+function openSettings(event) {
+    // Find the closest ancestor element with the class "card"
+    const card = event.target.closest('.card');
+
+    // If a card element is found
+    if (card) {
+        // Find the settings bar within the card
+        const settingsBar = card.querySelector('.card-footer');
+
+        // If settings bar exists
+        if (settingsBar) {
+            // Toggle the visibility of the settings bar by toggling a CSS class
+            settingsBar.classList.toggle('visible');
+        }
+    }
+}
+

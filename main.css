@@ -3,7 +3,7 @@
     line-height: 1.5;
     font-weight: 400;
     color-scheme: light dark;
-    color: rgba(60, 60, 60, 0.87);
+    color: #3c3c3c;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -51,11 +51,11 @@ body{
     
 }
 
-.card-title-bar input[type="color"]{
+input[type="color"]{
     padding:0;
     border: none;
     outline: none;
-    width: 30px;
+    width: 20px;
     height: 20px;
     background-color: transparent
 }
@@ -91,6 +91,39 @@ input[type="color"]::-webkit-color-swatch-wrapper {
     height: 100%;
   
   }
+  /* .line {
+    margin-top: -11px;
+    margin-bottom: 10px;
+ border-bottom: 1px solid rgba(27, 26, 26, 0.098);
+   
+} */
+  .card-footer{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 70%;
+    background-color: rgba(0, 0, 0, 0.701); /* Adjust the opacity as needed */
+    color: white;
+    font-size: 10px;
+    display: none;
+    transition: 1s;
+  }
+  .card-footer.visible {
+    display: block;
+  }
+  .card-footer h4{
+    margin-top: 7px;
+    margin-left: 10px;
+  }
+ 
+  .card-footer .card-footer-items{
+    display: flex;
+    
+    justify-content: space-around;
+    margin-left: 10px;
+  }
+ 
 footer{
     display: flex;
     gap: 10px;
