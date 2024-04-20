@@ -1,7 +1,7 @@
-import { handleDelete } from './delete_note.js';
-import { handleToggle } from './drop_down_up.js';
-import { iconToggleUP } from './icons.js';
-import { changeColor, changeTextColor } from './changecolor.js';
+import { handleDelete } from './settings/delete_note.js';
+import { handleToggle } from './settings/drop_down_up.js';
+import { iconToggleUP } from './utils/icons.js';
+import { changeColor, changeTextColor } from './settings/changecolor.js';
 
 // Constants
 export const container = document.getElementById('container');
@@ -127,12 +127,10 @@ function mouseDown(e) {
 function openSettings(event) {
     // Find the closest ancestor element with the class "card"
     const card = event.target.closest('.card');
-
     // If a card element is found
     if (card) {
         // Find the settings bar within the card
         const settingsBar = card.querySelector('.card-footer');
-
         // If settings bar exists
         if (settingsBar) {
             // Toggle the visibility of the settings bar by toggling a CSS class

@@ -1,4 +1,4 @@
-import {darkenColor} from './darkercolor.js'
+import {darkenColor} from '../utils/darkercolor.js'
 export function changeColor(e) {
     // Get the original color value
     const originalColor = e.target.value;

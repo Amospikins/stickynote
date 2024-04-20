@@ -1,6 +1,6 @@
 // Importing functions from "create_note.js" and "stackToLeftRight.js"
 import { addItem, container } from "./create_note.js";
-import { stackCardsToLeft, stackCardsToRight } from "./stackToLeftRight.js";
+import { stackCardsToLeft, stackCardsToRight } from "./settings/stackToLeftRight.js";
 
 // Selecting the element with the ID "new_card"
 const newCardButton = document.querySelector('#new_card');

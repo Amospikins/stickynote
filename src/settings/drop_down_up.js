@@ -1,4 +1,4 @@
-import { iconToggleDown, iconToggleUP } from './icons.js'; // Assuming icons.js contains the icon definitions
+import { iconToggleDown, iconToggleUP } from '../utils/icons.js'; // Assuming icons.js contains the icon definitions
 
 export async function handleToggle() {
     const card = this.parentElement.parentElement;
