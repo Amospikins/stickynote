@@ -2,35 +2,18 @@ import { handleDelete } from './settings/delete_note.js';
 import { handleToggle } from './settings/drop_down_up.js';
 import { iconToggleUP, iconEllipsis, iconTrash } from './utils/icons.js';
 import { changeColor, changeTextColor } from './settings/changecolor.js';
-import { openDB } from './database/dbconnect.js'
 
 // Constants
 export const container = document.getElementById('container');
 
+
 // Variables for dragging functionality
-let newPosX = 0, newPosY = 0, startPosX = 0, startPosY = 0;
+let newPosX = 0, newPosY = 0, startPosX = JSON.parse(localStorage.getItem('startPosX')) ?? 0, startPosY = JSON.parse(localStorage.getItem('startPosY')) ?? 0;
 
 let selectedElement;
+console.log(startPosX);
+const toBeStored = {
 
-// Open IndexedDB once
-const request = window.indexedDB.open('CardDB', 1);
-
-let db;
-request.onupgradeneeded = function(event) {
-    db = event.target.result;
-    if (!db.objectStoreNames.contains('cards')) {
-        const objectStore = db.createObjectStore('cards', { keyPath: 'id' });
-        objectStore.createIndex('posX', 'posX', { unique: false });
-        objectStore.createIndex('posY', 'posY', { unique: false });
-    }
-};
-
-request.onerror = function(event) {
-    console.error('IndexedDB error:', event.target.errorCode);
-};
-
-request.onsuccess = function(event) {
-    db = event.target.result;
 };
 
 // Function to add a new item to the container
@@ -73,10 +56,11 @@ export async function addItem(elem) {
 
     const settingsBtn = document.getElementById(`settings-${uuid}`);
     settingsBtn.addEventListener('click', openSettings);
+   
 
     const inputColor = document.getElementById(`input-${uuid}`);
     inputColor.addEventListener('input', changeColor);
-
+    
     const inputTextColor = document.getElementById(`input-text-${uuid}`);
     inputTextColor.addEventListener('input', changeTextColor);
 
@@ -95,10 +79,10 @@ function autoGrow() {
 }
 
 // Function to handle mouse move during dragging
-async function mouseMove(e) {
+function mouseMove(e) {
     newPosX = startPosX - e.clientX;
     newPosY = startPosY - e.clientY;
-
+  
     startPosX = e.clientX;
     startPosY = e.clientY;
 
@@ -113,15 +97,12 @@ async function mouseMove(e) {
 
     selectedElement.style.top = newY + "px";
     selectedElement.style.left = newX + "px";
-
-    // Save the position to IndexedDB
-    const db = await openDB();
-    savePosition(db, selectedElement.dataset.id, newX, newY);
 }
 
 // Function to handle mouse down event for dragging
 function mouseDown(e) {
     e.preventDefault();
+
 
     const items = document.querySelectorAll('.card-title-bar');
     selectedElement = e.target.parentElement;
@@ -142,6 +123,9 @@ function mouseDown(e) {
         selectedElement.classList.remove('dragging');
         selectedElement.classList.add('dropped');
         document.removeEventListener('mousemove', mouseMove);
+        toBeStored['startPosX'] = JSON.stringify((selectedElement.offsetLeft - newPosX) + 'px')
+        toBeStored['startPosY'] = JSON.stringify((selectedElement.offsetLeft - newPosY) + 'px')
+   
     });
 }
 
@@ -160,9 +144,13 @@ function openSettings(event) {
     }
 }
 
-// Function to save position to IndexedDB
-function savePosition(db, cardId, posX, posY) {
-    const transaction = db.transaction(['cards'], 'readwrite');
-    const objectStore = transaction.objectStore('cards');
-    const request = objectStore.put({ id: cardId, posX: posX, posY: posY });
+function saveData(){
+    console.log('checking for data to be saved')
+    Object.keys(toBeStored).forEach(function(key){
+        localStorage.setItem(key, toBeStored[key]);
+        console.log(`updated ${key}`);
+        delete toBeStored[key];
+    });
 }
+
+setInterval(saveData, 3000)
